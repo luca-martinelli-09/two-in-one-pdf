@@ -191,8 +191,11 @@ def main():
         print("\n[INFO] Saving file")
         with open(fileoutput, "wb") as f:
             writer.write(f)
-
-        os.remove(tmpFileName)
+        
+        try:
+            os.remove(tmpFileName)
+        except Exception:
+            pass
     else:
         print("[ERROR] Input file does not exists")
 
