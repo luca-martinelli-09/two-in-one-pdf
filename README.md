@@ -40,7 +40,7 @@ These packages are required for correct functionality (avaiable also in [require
 
 - PyPDF2
 - fpdf
-- progressbar
+- progressbar2
 
 You can install all these dependences with
 
