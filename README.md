@@ -10,7 +10,9 @@ This tool let you to create a PDF with two pages in one page.
 python3 two-in-one-pdf.py -i filename [-o outputfile] [-c configfile]
 ```
 
-### Compiled file (avaiable in releases)
+### Compiled file
+
+You can generate the executable script using pyinstaller, or you can use the one avaiable in releases section (if avaiable)
 
 ``` bash
 two-in-one-pdf -i filename [-o outputfile] [-c configfile]
