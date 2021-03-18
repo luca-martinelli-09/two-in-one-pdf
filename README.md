@@ -4,6 +4,29 @@ This tool let you to create a PDF with two pages in one page.
 
 ## Usage
 
+### Python
+
 ``` bash
-two-in-one -i filename
+python3 two-in-one-pdf.py -i filename [-o outputfile]
+```
+
+### Compiled file (avaiable in releases)
+
+``` bash
+two-in-one-pdf -i filename [-o outputfile]
+```
+
+If no output file name given, it will be user input file name with "_merged" appended.
+
+## Configs
+
+You can change [default.ini](default.ini) file. The default configuration is:
+
+``` ini
+[GLOBAL]
+
+scale_page = 0.5 # how much pages are scaled
+margin_x = 120 # margin on x axis
+margin_y = 120 # margin on y axis
+margin_inter = 80 # margin on y axis between the pages
 ```
