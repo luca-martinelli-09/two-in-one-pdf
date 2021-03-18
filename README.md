@@ -30,3 +30,17 @@ margin_x = 120 # margin on x axis
 margin_y = 120 # margin on y axis
 margin_inter = 80 # margin on y axis between the pages
 ```
+
+## Requirements for Python
+
+These packages are required for correct functionality (avaiable also in [requirements.txt](requirements.txt)):
+
+- PyPDF2
+- fpdf
+- progressbar
+
+You can install all these dependences with
+
+``` bash
+pip3 install PyPDF2 fpdf progressbar
+```
