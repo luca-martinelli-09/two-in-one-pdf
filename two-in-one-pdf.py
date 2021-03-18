@@ -10,8 +10,11 @@ tmpFileName = ".tmp.pdf"
 
 args_parser = argparse.ArgumentParser(description="Create PDF with two pages in one")
 args_parser.add_argument("-i", "--input", dest="sourcefile", help="Input PDF")
+args_parser.set_defaults(sourcefile=None)
 args_parser.add_argument("-o", "--output", dest="outputfile", help="Output PDF name")
 args_parser.set_defaults(outputfile=None)
+args_parser.add_argument("-c", "--config", dest="configfile", help="Config ini file")
+args_parser.set_defaults(configfile="default.ini")
 
 args = args_parser.parse_args()
 
@@ -25,10 +28,11 @@ def get_configs():
         "margin_x": 120,
         "margin_y": 120,
         "margin_inter": 80,
+        "border": True,
     }
 
     try:
-        config.read("default.ini")
+        config.read(args.configfile)
     except Exception:
         pass
 
@@ -37,12 +41,14 @@ def get_configs():
     margin_x = float(config["GLOBAL"].get("margin_x"))
     margin_y = float(config["GLOBAL"].get("margin_y"))
     margin_inter = float(config["GLOBAL"].get("margin_inter"))
+    border = float(config["GLOBAL"].getboolean("border"))
 
     global_options = {
         "scale_page": scale_page,
         "margin_x": margin_x,
         "margin_y": margin_y,
         "margin_inter": margin_inter,
+        "border": border,
     }
 
     return global_options
@@ -71,19 +77,20 @@ def create_tmp_file(page_width, page_height, has_second_page):
     fpdfTemp = fpdf.FPDF(unit="pt", format=(out_page_w, out_page_h))
     fpdfTemp.add_page()
 
-    # print first rectangle
-    fpdfTemp.rect(
-        global_options["margin_x"], global_options["margin_y"], page_width, page_height
-    )
-
-    # print second rectangle
-    if has_second_page:
+    if global_options["border"]:
+        # print first rectangle
         fpdfTemp.rect(
-            global_options["margin_x"],
-            global_options["margin_y"] + page_height + global_options["margin_inter"],
-            page_width,
-            page_height,
+            global_options["margin_x"], global_options["margin_y"], page_width, page_height
         )
+
+        # print second rectangle
+        if has_second_page:
+            fpdfTemp.rect(
+                global_options["margin_x"],
+                global_options["margin_y"] + page_height + global_options["margin_inter"],
+                page_width,
+                page_height,
+            )
     
     # save file
     fpdfTemp.output(tmpFileName)
@@ -96,14 +103,14 @@ def main():
 
     fileinput = args.sourcefile
     fileoutput = args.outputfile
-
-    # if no output name, set it by input
-    if fileoutput == None:
-        filename = os.path.splitext(fileinput)[0]
-        fileoutput = filename + "_merged.pdf"
     
     # check if file exists
-    if os.path.isfile(fileinput):
+    if fileinput != None and os.path.exists(fileinput) and os.path.isfile(fileinput):
+        # if no output name, set it by input
+        if fileoutput == None:
+            filename = os.path.splitext(fileinput)[0]
+            fileoutput = filename + "_merged.pdf"
+            
         # open given pdf
         opened_PDF = PdfFileReader(open(fileinput, "rb"))
         # setup writer
