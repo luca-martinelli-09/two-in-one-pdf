@@ -1,8 +1,30 @@
-# Two in One PDF
+# TwoInOnePDF (class)
 
 This tool let you to create a PDF with two pages in one page.
 
-## Usage
+### Params
+- options (passed as dictionary):
+    - scale_page:     How much the page are scaled
+    - margin_x:       Horizontal margin
+    - margin_y:       Vertical margin
+    - margin_inter:   Margin between two pages
+    - border:         Draw a border around pages
+
+- fileinput:      Input filename
+- fileoutput:     If specified, the output filename, otherwise the input filename with - appended "_merged"
+- progress_hook:  Custom progress hook, otherwise the default one. The progress hook has as params a dictionary called status with:
+    - event:          The current event, can be started, update, saving, finished
+    - num_pages:      The total pages to be processed. Passed only on started event
+    - message:        An additional message of the event. Not passed in update event
+    - merged_pages:   The total pages merged. Passed only on update event
+
+### Usage
+1. Create a instance of TwoInOnePDF, passing the above params.
+1. Call the method merge_pages()
+
+---
+
+# CLI version (based on TwoInOnePDF)
 
 ### Python
 
@@ -45,5 +67,5 @@ These packages are required for correct functionality (avaiable also in [require
 You can install all these dependences with
 
 ``` bash
-pip3 install PyPDF2 fpdf progressbar
+pip3 install PyPDF2 fpdf progressbar2
 ```
