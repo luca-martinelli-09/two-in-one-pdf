@@ -4,31 +4,6 @@ from PyPDF2.pdf import PageObject
 import fpdf
 import progressbar
 
-"""
-TwoInOnePDF
-
-# Params
-    options (passed as dictionary):
-        scale_page:     How much the page are scaled
-        margin_x:       Horizontal margin
-        margin_y:       Vertical margin
-        margin_inter:   Margin between two pages
-        border:         Draw a border around pages
-
-    fileinput:      Input filename
-    fileoutput:     If specified, the output filename, otherwise the input filename with appended "_merged"
-    progress_hook:  Custom progress hook, otherwise the default one
-                    The progress hook has as params a dictionary called status with:
-                        event:          The current event, can be started, update, saving, finished
-                        num_pages:      The total pages to be processed. Passed only on started event
-                        message:        An additional message of the event. Not passed in update event
-                        merged_pages:   The total pages merged. Passed only on update event
-
-# Usage
-    Create a instance of TwoInOnePDF, passing the above params.
-    Call the method merge_pages()
-"""
-
 
 class TwoInOnePDF():
     _scale_page = 0.5
@@ -62,7 +37,7 @@ class TwoInOnePDF():
 
         # check if file exists
         if fileinput != None and os.path.exists(fileinput) and os.path.isfile(fileinput):
-           # if no output name, set it by input
+            # if no output name, set it by input
             if fileoutput == None:
                 filename = os.path.splitext(fileinput)[0]
                 self._fileoutput = filename + "_merged.pdf"
@@ -108,7 +83,8 @@ class TwoInOnePDF():
     def _default_progress_hook(self, status):
         if status["event"] == "started":
             if self._pbar == None:
-                self._pbar = progressbar.ProgressBar(max_value=status["num_pages"])
+                self._pbar = progressbar.ProgressBar(
+                    max_value=status["num_pages"])
 
             print("[INFO] " + status["message"] + "\n")
         elif status["event"] == "update":
@@ -131,7 +107,7 @@ class TwoInOnePDF():
 
         # send notification
         self._progress_hook({"event": "started", "num_pages": num_pages,
-                            "message": "Opened PDF, " + str(num_pages) + " pages read. Start merging"})
+                             "message": "Opened PDF, " + str(num_pages) + " pages read. Start merging"})
 
         i = 0
         # for each page
@@ -140,7 +116,7 @@ class TwoInOnePDF():
             first_page = opened_PDF.getPage(i)
             # send notification
             self._progress_hook(
-                {"event": "update", "merged_pages": i + 1})
+                {"event": "update", "merged_pages": i + 1, "num_pages": num_pages})
 
             # open second page (if exists)
             has_second_page = False
@@ -150,7 +126,7 @@ class TwoInOnePDF():
 
                 # send notification
                 self._progress_hook(
-                    {"event": "update", "merged_pages": i + 2})
+                    {"event": "update", "merged_pages": i + 2, "num_pages": num_pages})
             else:
                 second_page = PageObject.createBlankPage(
                     None, page_width, page_height)
