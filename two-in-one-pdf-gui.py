@@ -13,7 +13,9 @@ class TwoInOnePDFApp(tk.Frame):
                        "margin_x": 120,
                        "margin_y": 120,
                        "margin_inter": 80,
-                       "border": True, }
+                       "rotation": 0,
+                       "border": True,
+                       }
 
     def __init__(self, root=None, options=None):
         super().__init__(root)
@@ -129,13 +131,23 @@ class TwoInOnePDFApp(tk.Frame):
         margin_entry.pack(side=LEFT)
 
         # ROW 3
+        # Rotation
         options_frame_3 = ttk.Frame(self.root)
         options_frame_3.pack(side=TOP, padx=20, pady=(5, 10), fill=X)
 
-        self.border_var = tk.IntVar(value=int(self._global_options["border"]))
+        tk.Label(options_frame_3,
+                 text="Rotation (0, 90, 180, 270)", font=('Helvetica', 9, 'bold')).pack(side=LEFT, padx=(0, 10))
+        self.rotation_var = tk.IntVar(self.root, str(self._global_options["rotation"]))
+        margin_entry = tk.Entry(
+            options_frame_3, textvariable=self.rotation_var)
+        margin_entry.pack(side=LEFT)
+
+        # Border
+        self.border_var = tk.IntVar(
+            self.root, int(self._global_options["border"]))
         border_checkbox = ttk.Checkbutton(options_frame_3, text='Draw borders around pages', variable=self.border_var,
                                           onvalue=1, offvalue=0)
-        border_checkbox.pack(side=LEFT)
+        border_checkbox.pack(side=LEFT, padx=(20, 0))
 
     def _create_merge_btn(self):
         merge_btn_frame = ttk.Frame(self.root)
@@ -186,7 +198,9 @@ class TwoInOnePDFApp(tk.Frame):
                                     "margin_x": float(self.margin_x_var.get()),
                                     "margin_y": float(self.margin_y_var.get()),
                                     "margin_inter": float(self.margin_inter_var.get()),
-                                    "border": True if self.border_var.get() == 1 else False, }
+                                    "rotation": int(self.rotation_var.get()),
+                                    "border": True if self.border_var.get() == 1 else False,
+                                    }
             config["GLOBAL"] = self._global_options
 
             with open('default.ini', 'w') as configfile:
@@ -198,7 +212,8 @@ class TwoInOnePDFApp(tk.Frame):
         if status["event"] == "started":
             self.status_label_var.set(status["message"])
         elif status["event"] == "update":
-            self.progress_bar["value"] = int(status["merged_pages"] / status["num_pages"]) * 100
+            self.progress_bar["value"] = int(
+                status["merged_pages"] / status["num_pages"]) * 100
             self.root.update_idletasks()
         elif status["event"] == "saving":
             self.status_label_var.set(status["message"])
@@ -213,7 +228,7 @@ class TwoInOnePDFApp(tk.Frame):
             self._save_configs()
             two_in_one_pdf = TwoInOnePDF(
                 options=self._global_options, fileinput=self.fileinput_var.get(), fileoutput=self.fileoutput_var.get(), progress_hook=self._custom_hook)
-            
+
             two_in_one_pdf.merge_pages()
         except FileNotFoundError:
             messagebox.showerror("Error", "File not found")
@@ -232,6 +247,7 @@ def get_configs():
         "margin_x": 120,
         "margin_y": 120,
         "margin_inter": 80,
+        "rotation": 0,
         "border": True,
     }
 
@@ -245,6 +261,7 @@ def get_configs():
     margin_x = float(config["GLOBAL"].get("margin_x"))
     margin_y = float(config["GLOBAL"].get("margin_y"))
     margin_inter = float(config["GLOBAL"].get("margin_inter"))
+    rotation = float(config["GLOBAL"].get("rotation"))
     border = float(config["GLOBAL"].getboolean("border"))
 
     global_options = {
@@ -252,6 +269,7 @@ def get_configs():
         "margin_x": margin_x,
         "margin_y": margin_y,
         "margin_inter": margin_inter,
+        "rotation": rotation,
         "border": border,
     }
 

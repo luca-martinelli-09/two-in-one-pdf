@@ -8,6 +8,7 @@ This tool let you to create a PDF with two pages in one page.
     - margin_x:       Horizontal margin
     - margin_y:       Vertical margin
     - margin_inter:   Margin between two pages
+    - rotation:       Rotation of the pages (can be 0, 90, 180 or 270)
     - border:         Draw a border around pages
 
 - fileinput:      Input filename
@@ -69,6 +70,7 @@ scale_page = 0.5    # how much pages are scaled
 margin_x = 120      # margin on x axis
 margin_y = 120      # margin on y axis
 margin_inter = 80   # margin on y axis between the pages
+rotation = 0        # rotation of the pages, can be 0, 90, 180 or 270
 border = True       # print a border around pages
 ```
 
@@ -115,5 +117,6 @@ scale_page = 0.5    # how much pages are scaled
 margin_x = 120      # margin on x axis
 margin_y = 120      # margin on y axis
 margin_inter = 80   # margin on y axis between the pages
+rotation = 0        # rotation of the pages, can be 0, 90, 180 or 270
 border = True       # print a border around pages
 ```

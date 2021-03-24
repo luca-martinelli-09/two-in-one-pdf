@@ -25,6 +25,7 @@ def get_configs():
         "margin_x": 120,
         "margin_y": 120,
         "margin_inter": 80,
+        "rotation": 0,
         "border": True,
     }
 
@@ -38,6 +39,7 @@ def get_configs():
     margin_x = float(config["GLOBAL"].get("margin_x"))
     margin_y = float(config["GLOBAL"].get("margin_y"))
     margin_inter = float(config["GLOBAL"].get("margin_inter"))
+    rotation = float(config["GLOBAL"].get("rotation"))
     border = float(config["GLOBAL"].getboolean("border"))
 
     global_options = {
@@ -45,6 +47,7 @@ def get_configs():
         "margin_x": margin_x,
         "margin_y": margin_y,
         "margin_inter": margin_inter,
+        "rotation": rotation,
         "border": border,
     }
 
@@ -67,6 +70,8 @@ def main():
         two_in_one_pdf.merge_pages()
     except FileNotFoundError:
         print("[ERROR] Input file does not exists")
+    except ValueError as e:
+        print("[ERROR]", e)
 
 
 if __name__ == "__main__":

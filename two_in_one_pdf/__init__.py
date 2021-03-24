@@ -10,6 +10,7 @@ class TwoInOnePDF():
     _margin_x = 120
     _margin_y = 120
     _margin_inter = 80
+    _rotation = 0
     _border = True
 
     _fileinput = None
@@ -21,11 +22,18 @@ class TwoInOnePDF():
     _pbar = None
 
     def __init__(self, options, fileinput, fileoutput=None, progress_hook=None):
-        self._scale_page = options["scale_page"]
-        self._margin_x = options["margin_x"]
-        self._margin_y = options["margin_y"]
-        self._margin_inter = options["margin_inter"]
-        self._border = options["border"]
+        try:
+            self._scale_page = options["scale_page"]
+            self._margin_x = options["margin_x"]
+            self._margin_y = options["margin_y"]
+            self._margin_inter = options["margin_inter"]
+            self._rotation = options["rotation"]
+            self._border = int(options["border"])
+        except Exception:
+            pass
+
+        if self._rotation not in [0, 90, 180, 270]:
+            raise ValueError("Invalid rotation value")
 
         self._fileinput = fileinput
         self._fileoutput = fileoutput
@@ -141,13 +149,22 @@ class TwoInOnePDF():
                 self._scale_page
             )
 
+            # if rotate switch height and width
+            if self._rotation in [90, 270]:
+                page_height, page_width = page_width, page_height
+
+            # set up rotation correction
+            rotation_correction = {0: (0, 0), 90: (1, 0),
+                                   270: (0, 1), 180: (1, 1)}[self._rotation]
+
             # calc page size with margins
             out_page_w, out_page_h = self._calc_page_size(
                 page_width, page_height)
 
             # create temporary file with border box
             self._create_tmp_file(page_width, page_height, has_second_page)
-            tmpPDF = PdfFileReader(open(self._tmp_filename, "rb"))
+            open_tmp_pdf = open(self._tmp_filename, "rb")
+            tmpPDF = PdfFileReader(open_tmp_pdf)
 
             # create blank page
             merged_page = PageObject.createBlankPage(
@@ -157,21 +174,23 @@ class TwoInOnePDF():
             )
 
             # add first page
-            merged_page.mergeScaledTranslatedPage(
+            merged_page.mergeRotatedScaledTranslatedPage(
                 first_page,
+                self._rotation,
                 self._scale_page,
-                self._margin_x,
-                page_height +
+                self._margin_x + page_width * rotation_correction[0],
+                page_height * (1 + rotation_correction[1]) +
                 self._margin_y + self._margin_inter,
             )
 
             # add second page
             if has_second_page:
-                merged_page.mergeScaledTranslatedPage(
+                merged_page.mergeRotatedScaledTranslatedPage(
                     second_page,
+                    self._rotation,
                     self._scale_page,
-                    self._margin_x,
-                    self._margin_y,
+                    self._margin_x + page_width * rotation_correction[0],
+                    self._margin_y + page_height * rotation_correction[1],
                 )
 
             # add borders
@@ -179,6 +198,12 @@ class TwoInOnePDF():
 
             # add page to the file
             writer.addPage(merged_page)
+
+            # close tmp file
+            try:
+                open_tmp_pdf.close()
+            except Exception:
+                pass
 
             i += 2
 
